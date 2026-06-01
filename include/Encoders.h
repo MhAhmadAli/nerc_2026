@@ -11,48 +11,31 @@ typedef struct
     uint32_t ticks;
 } Encoder;
 
-Encoder flEncoder = {pin : 3, ticks : 0};
-Encoder frEncoder = {pin : 2, ticks : 0};
-Encoder rlEncoder = {pin : 18, ticks : 0};
-Encoder rrEncoder = {pin : 19, ticks : 0};
+Encoder _leftEncoder = {pin : 3, ticks : 0};
+Encoder _rightEncoder = {pin : 2, ticks : 0};
 
-void flInterruptRoutine()
+void _leftInterruptRoutine()
 {
-    ++flEncoder.ticks;
+    ++_leftEncoder.ticks;
 }
 
-void frInterruptRoutine()
+void _rightInterruptRoutine()
 {
-    ++frEncoder.ticks;
-}
-
-void rlInterruptRoutine()
-{
-    ++rlEncoder.ticks;
-}
-
-void rrInterruptRoutine()
-{
-    ++rrEncoder.ticks;
+    ++_rightEncoder.ticks;
 }
 
 void initEncoders()
 {
-    attachInterrupt(digitalPinToInterrupt(flEncoder.pin), flInterruptRoutine, RISING);
-    attachInterrupt(digitalPinToInterrupt(frEncoder.pin), frInterruptRoutine, RISING);
-    attachInterrupt(digitalPinToInterrupt(rlEncoder.pin), rlInterruptRoutine, RISING);
-    attachInterrupt(digitalPinToInterrupt(rrEncoder.pin), rrInterruptRoutine, RISING);
+    attachInterrupt(digitalPinToInterrupt(_leftEncoder.pin), _leftInterruptRoutine, RISING);
+    attachInterrupt(digitalPinToInterrupt(_rightEncoder.pin), _rightInterruptRoutine, RISING);
 }
 
 void printEncoders()
 {
-    Serial.print(flEncoder.ticks);
+    Serial.print(_leftEncoder.ticks);
     Serial.print(" ");
-    Serial.print(frEncoder.ticks);
-    Serial.print(" ");
-    Serial.print(rlEncoder.ticks);
-    Serial.print(" ");
-    Serial.println(rrEncoder.ticks);
+    Serial.print(_rightEncoder.ticks);
+    Serial.println();
 }
 
 #endif //_ENCODERS_H_

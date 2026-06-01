@@ -7,49 +7,54 @@
 #include "Sensors.h"
 #include "Motors.h"
 
-int targetValFront = 570;
-int targetValLeft = 300;
-int baseSpeed = 150;
+enum Direction
+{
+    FORWARD = 'f',
+    BACKWARD = 'b'
+};
 
-long integral = 0; // Accumulated error
-
-void lineFollow(char direction = 'f', int speed = 150)
+void lineFollow(Direction direction = FORWARD, int speed = 50)
 {
     // black -> 1, white -> 0
     bool l, m, r;
 
-    if (direction == 'f')
+    if (direction == FORWARD)
     {
-        l = analogRead(frontSensors[0]) > BLACK_VALUE ? 0 : 1;
-        m = analogRead(frontSensors[1]) > BLACK_VALUE ? 0 : 1;
-        r = analogRead(frontSensors[2]) > BLACK_VALUE ? 0 : 1;
+        l = analogRead(frontSensors[1]) < BLACK_VALUE ? 0 : 1;
+        m = analogRead(frontSensors[2]) < BLACK_VALUE ? 0 : 1;
+        r = analogRead(frontSensors[3]) < BLACK_VALUE ? 0 : 1;
 
         if (l == 1 && m == 1 && r == 1)
         {
+            Serial.println("Forward");
             forward(speed, speed);
         }
         else if (l == 0 && m == 1 && r == 0)
         {
+            Serial.println("Forward");
             forward(speed, speed);
-        }
-        else if (l == 1 && m == 0 && r == 0)
-        {
-            leftInverse(speed, speed);
         }
         else if (l == 0 && m == 0 && r == 1)
         {
+            Serial.println("Left");
+            leftInverse(speed, speed);
+        }
+        else if (l == 1 && m == 0 && r == 0)
+        {
+            Serial.println("Right");
             rightInverse(speed, speed);
         }
         else
         {
+            Serial.println("Forward");
             forward(speed, speed);
         }
     }
-    else if (direction == 'b')
+    else if (direction == BACKWARD)
     {
-        l = analogRead(backSensors[0]) > BLACK_VALUE ? 0 : 1;
-        m = analogRead(backSensors[1]) > BLACK_VALUE ? 0 : 1;
-        r = analogRead(backSensors[2]) > BLACK_VALUE ? 0 : 1;
+        l = analogRead(backSensors[1]) < BLACK_VALUE ? 0 : 1;
+        m = analogRead(backSensors[2]) < BLACK_VALUE ? 0 : 1;
+        r = analogRead(backSensors[3]) < BLACK_VALUE ? 0 : 1;
 
         if (l == 1 && m == 1 && r == 1)
         {
@@ -75,378 +80,26 @@ void lineFollow(char direction = 'f', int speed = 150)
         {
             // Serial.println("Back");
             backward(speed, speed);
-        }
-    }
-    else if (direction == 'l')
-    {
-        l = analogRead(leftSensors[0]) > BLACK_VALUE ? 0 : 1;
-        m = analogRead(leftSensors[1]) > BLACK_VALUE ? 0 : 1;
-        r = analogRead(leftSensors[2]) > BLACK_VALUE ? 0 : 1;
-
-        if (l == 1 && m == 1 && r == 1)
-        {
-            // Serial.println("Back");
-            left(speed, speed);
-        }
-        else if (l == 0 && m == 1 && r == 0)
-        {
-            // Serial.println("Back");
-            left(speed, speed);
-        }
-        else if (l == 1 && m == 0 && r == 0)
-        {
-            // Serial.println("Left");
-            leftInverse(speed, speed);
-        }
-        else if (l == 0 && m == 0 && r == 1)
-        {
-            // Serial.println("Right");
-            rightInverse(speed, speed);
-        }
-        else
-        {
-            // Serial.println("Back");
-            left(speed, speed);
-        }
-    }
-    else if (direction == 'r')
-    {
-        l = analogRead(rightSensors[0]) > BLACK_VALUE ? 0 : 1;
-        m = analogRead(rightSensors[1]) > BLACK_VALUE ? 0 : 1;
-        r = analogRead(rightSensors[2]) > BLACK_VALUE ? 0 : 1;
-
-        if (l == 1 && m == 1 && r == 1)
-        {
-            // Serial.println("Back");
-            right(speed, speed);
-        }
-        else if (l == 0 && m == 1 && r == 0)
-        {
-            // Serial.println("Back");
-            right(speed, speed);
-        }
-        else if (l == 1 && m == 0 && r == 0)
-        {
-            // Serial.println("Left");
-            leftInverse(speed, speed);
-            // forward(speed, speed);
-        }
-        else if (l == 0 && m == 0 && r == 1)
-        {
-            // Serial.println("Right");
-            rightInverse(speed, speed);
-            // backward(speed, speed);
-        }
-        else
-        {
-            // Serial.println("Back");
-            right(speed, speed);
         }
     }
 }
 
-void lineFollowV3(char direction = 'f', int speed = 150)
-{
-    // black -> 1, white -> 0
-    bool l, m, r;
-
-    if (direction == 'f')
-    {
-        l = analogRead(frontSensors[0]) > BLACK_VALUE ? 0 : 1;
-        m = analogRead(frontSensors[1]) > BLACK_VALUE ? 0 : 1;
-        r = analogRead(frontSensors[2]) > BLACK_VALUE ? 0 : 1;
-
-        if (l == 1 && m == 1 && r == 1)
-        {
-            forward(speed, speed);
-        }
-        else if (l == 0 && m == 1 && r == 0)
-        {
-            forward(speed, speed);
-        }
-        else if (l == 1 && m == 0 && r == 0)
-        {
-            leftInverse(speed, speed);
-        }
-        else if (l == 0 && m == 0 && r == 1)
-        {
-            rightInverse(speed, speed);
-        }
-        else
-        {
-            forward(speed, speed);
-        }
-    }
-    else if (direction == 'b')
-    {
-        l = analogRead(backSensors[0]) > BLACK_VALUE ? 0 : 1;
-        m = analogRead(backSensors[1]) > BLACK_VALUE ? 0 : 1;
-        r = analogRead(backSensors[2]) > BLACK_VALUE ? 0 : 1;
-
-        if (l == 1 && m == 1 && r == 1)
-        {
-            // Serial.println("Back");
-            backward(speed, speed);
-        }
-        else if (l == 0 && m == 1 && r == 0)
-        {
-            // Serial.println("Back");
-            backward(speed, speed);
-        }
-        else if (l == 1 && m == 0 && r == 0)
-        {
-            // Serial.println("Left");
-            leftInverse(speed, speed);
-        }
-        else if (l == 0 && m == 0 && r == 1)
-        {
-            // Serial.println("Right");
-            rightInverse(speed, speed);
-        }
-        else
-        {
-            // Serial.println("Back");
-            backward(speed, speed);
-        }
-    }
-    else if (direction == 'l')
-    {
-        l = analogRead(leftSensors[0]) > BLACK_VALUE ? 0 : 1;
-        m = analogRead(leftSensors[1]) > BLACK_VALUE ? 0 : 1;
-        r = analogRead(leftSensors[2]) > BLACK_VALUE ? 0 : 1;
-
-        if (l == 1 && m == 1 && r == 1)
-        {
-            // Serial.println("Back");
-            left(speed, speed);
-        }
-        else if (l == 0 && m == 1 && r == 0)
-        {
-            // Serial.println("Back");
-            left(speed, speed);
-        }
-        else if (l == 1 && m == 0 && r == 0)
-        {
-            // Serial.println("Left");
-            leftInverse(speed, speed);
-        }
-        else if (l == 0 && m == 0 && r == 1)
-        {
-            // Serial.println("Right");
-            rightInverse(speed, speed);
-        }
-        else
-        {
-            // Serial.println("Back");
-            left(speed, speed);
-        }
-    }
-    else if (direction == 'r')
-    {
-        l = analogRead(rightSensors[0]) > BLACK_VALUE ? 0 : 1;
-        m = analogRead(rightSensors[1]) > BLACK_VALUE ? 0 : 1;
-        r = analogRead(rightSensors[2]) > BLACK_VALUE ? 0 : 1;
-
-        int ll = analogRead(leftSensors[0]) > BLACK_VALUE ? 0 : 1;
-        int lm = analogRead(leftSensors[1]) > BLACK_VALUE ? 0 : 1;
-        int lr = analogRead(leftSensors[2]) > BLACK_VALUE ? 0 : 1;
-
-        if (l == 1 && m == 1 && r == 1)
-        {
-            // Serial.println("Back");
-            right(speed, speed);
-        }
-        else if (l == 0 && m == 1 && r == 0)
-        {
-            // Serial.println("Back");
-            right(speed, speed);
-        }
-        else if (l == 1 && m == 0 && r == 0)
-        {
-            // Serial.println("Left");
-            leftInverse(speed, speed);
-            // forward(speed, speed);
-        }
-        else if (l == 0 && m == 0 && r == 1)
-        {
-            // Serial.println("Right");
-            rightInverse(speed, speed);
-            // backward(speed, speed);
-        }
-        else if (ll == 1 && lm == 0 && lr == 0)
-        {
-            backward(speed + 20, speed + 20);
-        }
-        else if (ll == 0 && lm == 0 && lr == 1)
-        {
-            forward(speed + 20, speed + 20);
-        }
-        else
-        {
-            // Serial.println("Back");
-            right(speed, speed);
-        }
-    }
-}
-
-void lineFollowV2(char direction = 'f', int speed = 150)
-{
-    // black -> 1, white -> 0
-    bool l, m, r;
-
-    if (direction == 'f')
-    {
-        l = analogRead(frontSensors[0]) > BLACK_VALUE ? 0 : 1;
-        m = analogRead(frontSensors[1]) > BLACK_VALUE ? 0 : 1;
-        r = analogRead(frontSensors[2]) > BLACK_VALUE ? 0 : 1;
-
-        if (l == 1 && m == 1 && r == 1)
-        {
-            forward(speed, speed);
-        }
-        else if (l == 0 && m == 1 && r == 0)
-        {
-            forward(speed, speed);
-        }
-        else if (l == 1 && m == 0 && r == 0)
-        {
-            left(speed, speed);
-        }
-        else if (l == 0 && m == 0 && r == 1)
-        {
-            right(speed, speed);
-        }
-        else
-        {
-            forward(speed, speed);
-        }
-    }
-    else if (direction == 'b')
-    {
-        l = analogRead(backSensors[0]) > BLACK_VALUE ? 0 : 1;
-        m = analogRead(backSensors[1]) > BLACK_VALUE ? 0 : 1;
-        r = analogRead(backSensors[2]) > BLACK_VALUE ? 0 : 1;
-
-        if (l == 1 && m == 1 && r == 1)
-        {
-            // Serial.println("Back");
-            backward(speed, speed);
-        }
-        else if (l == 0 && m == 1 && r == 0)
-        {
-            // Serial.println("Back");
-            backward(speed, speed);
-        }
-        else if (l == 1 && m == 0 && r == 0)
-        {
-            // Serial.println("Left");
-            left(speed, speed);
-        }
-        else if (l == 0 && m == 0 && r == 1)
-        {
-            // Serial.println("Right");
-            right(speed, speed);
-        }
-        else
-        {
-            // Serial.println("Back");
-            backward(speed, speed);
-        }
-    }
-    else if (direction == 'l')
-    {
-        l = analogRead(leftSensors[0]) > BLACK_VALUE ? 0 : 1;
-        m = analogRead(leftSensors[1]) > BLACK_VALUE ? 0 : 1;
-        r = analogRead(leftSensors[2]) > BLACK_VALUE ? 0 : 1;
-
-        if (l == 1 && m == 1 && r == 1)
-        {
-            // Serial.println("Back");
-            left(speed, speed);
-        }
-        else if (l == 0 && m == 1 && r == 0)
-        {
-            // Serial.println("Back");
-            left(speed, speed);
-        }
-        else if (l == 1 && m == 0 && r == 0)
-        {
-            // Serial.println("Left");
-            backward(speed, speed);
-        }
-        else if (l == 0 && m == 0 && r == 1)
-        {
-            // Serial.println("Right");
-            forward(speed, speed);
-        }
-        else
-        {
-            // Serial.println("Back");
-            left(speed, speed);
-        }
-    }
-    else if (direction == 'r')
-    {
-        l = analogRead(rightSensors[0]) > BLACK_VALUE ? 0 : 1;
-        m = analogRead(rightSensors[1]) > BLACK_VALUE ? 0 : 1;
-        r = analogRead(rightSensors[2]) > BLACK_VALUE ? 0 : 1;
-
-        if (l == 1 && m == 1 && r == 1)
-        {
-            // Serial.println("Back");
-            right(speed, speed);
-        }
-        else if (l == 0 && m == 1 && r == 0)
-        {
-            // Serial.println("Back");
-            right(speed, speed);
-        }
-        else if (l == 1 && m == 0 && r == 0)
-        {
-            // Serial.println("Left");
-            // leftInverse(speed, speed);
-            forward(speed, speed);
-        }
-        else if (l == 0 && m == 0 && r == 1)
-        {
-            // Serial.println("Right");
-            // rightInverse(speed, speed);
-            backward(speed, speed);
-        }
-        else
-        {
-            // Serial.println("Back");
-            right(speed, speed);
-        }
-    }
-}
-
-void lineFollowStrips(int stripsToMove, char direction = 'f', int speed = 150)
+void lineFollowStrips(int stripsToMove, Direction direction = FORWARD, int speed = 50)
 {
     int stripCount = 0;
     while (true)
     {
         int sensorOnLine = 0;
 
-        if (direction == 'f')
+        if (direction == FORWARD)
         {
             // Black -> 1, White -> 0
-            sensorOnLine = analogRead(leftSensors[2]) > BLACK_VALUE ? 0 : 1;
+            sensorOnLine = analogRead(leftSensor) > BLACK_VALUE ? 0 : 1;
         }
-        else if (direction == 'b')
+        else if (direction == BACKWARD)
         {
             // Black -> 1, White -> 0
-            sensorOnLine = analogRead(leftSensors[0]) > BLACK_VALUE ? 0 : 1;
-        }
-        else if (direction == 'l')
-        {
-            // Black -> 1, White -> 0
-            sensorOnLine = analogRead(frontSensors[0]) > BLACK_VALUE ? 0 : 1;
-        }
-        else if (direction == 'r')
-        {
-            // Black -> 1, White -> 0
-            sensorOnLine = analogRead(backSensors[0]) > BLACK_VALUE ? 0 : 1;
+            sensorOnLine = analogRead(leftSensor) > BLACK_VALUE ? 0 : 1;
         }
 
         unsigned long currentMillis = millis();
@@ -476,10 +129,10 @@ void lineFollowStrips(int stripsToMove, char direction = 'f', int speed = 150)
     }
 }
 
-void lineFollowEncoder(uint32_t ticksToMove, char direction = 'f', int speed = 150)
+void lineFollowEncoder(uint32_t ticksToMove, Direction direction = FORWARD, int speed = 50)
 {
-    flEncoder.ticks = 0;
-    while (flEncoder.ticks < ticksToMove)
+    _leftEncoder.ticks = 0;
+    while (_leftEncoder.ticks < ticksToMove)
     {
         Serial.println();
         lineFollow(direction, speed);
@@ -487,60 +140,143 @@ void lineFollowEncoder(uint32_t ticksToMove, char direction = 'f', int speed = 1
     halt();
 }
 
-void linefollowFrontPid()
+void linefollowWithFive(Direction direction = FORWARD, int speed = 50)
 {
-    float Kp = 0.09;
-    float Ki = 0.001;
+    // black -> 1, white -> 0
+    bool lm, l, m, r, rm;
 
-    // Sensor and error
-    int sensorValue = analogRead(frontSensors[1]);
-    int error = targetValFront - sensorValue;
-
-    // Integrate error (avoid windup by limiting)
-    integral += error;
-    integral = constrain(integral, -1000, 1000); // anti-windup
-
-    int correction = (Kp * error) + (Ki * integral);
-    Serial.println(correction);
-
-    int leftSpeed = baseSpeed - correction;
-    int rightSpeed = baseSpeed + correction;
-
-    // Limit PWM values between 0 and 255
-    leftSpeed = constrain(leftSpeed, 0, 255);
-    rightSpeed = constrain(rightSpeed, 0, 255);
-
-    forward(leftSpeed, rightSpeed);
-}
-
-void linefollowFrontPidWithEncoder(uint32_t ticksToMove)
-{
-    flEncoder.ticks = 0;
-    float Kp = 0.09;
-    float Ki = 0.001;
-    while (flEncoder.ticks < ticksToMove)
+    if (direction == FORWARD)
     {
 
-        // Sensor and error
-        int sensorValue = analogRead(frontSensors[1]);
-        int error = targetValFront - sensorValue;
+        lm = analogRead(frontSensors[0]) < BLACK_VALUE ? 0 : 1;
+        l = analogRead(frontSensors[1]) < BLACK_VALUE ? 0 : 1;
+        m = analogRead(frontSensors[2]) < BLACK_VALUE ? 0 : 1;
+        r = analogRead(frontSensors[3]) < BLACK_VALUE ? 0 : 1;
+        rm = analogRead(frontSensors[4]) < BLACK_VALUE ? 0 : 1;
 
-        // Integrate error (avoid windup by limiting)
-        integral += error;
-        integral = constrain(integral, -1000, 1000); // anti-windup
-
-        int correction = (Kp * error) + (Ki * integral);
-        Serial.println(correction);
-
-        int leftSpeed = baseSpeed - correction;
-        int rightSpeed = baseSpeed + correction;
-
-        // Limit PWM values between 0 and 255
-        leftSpeed = constrain(leftSpeed, 0, 255);
-        rightSpeed = constrain(rightSpeed, 0, 255);
-
-        forward(leftSpeed, rightSpeed);
+        if (l == 1 && m == 1 && r == 1)
+        {
+            forward(speed, speed);
+        }
+        else if (l == 0 && m == 1 && r == 0)
+        {
+            forward(speed, speed);
+        }
+        else if (l == 0 && m == 1 && r == 1)
+        {
+            leftInverse(speed, speed);
+        }
+        else if (lm == 0 && m == 1 && r == 1)
+        {
+            leftInverse(speed, speed);
+        }
+        else if (l == 1 && m == 1 && r == 0)
+        {
+            rightInverse(speed, speed);
+        }
+        else if (l == 1 && m == 1 && rm == 0)
+        {
+            rightInverse(speed, speed);
+        }
+        else
+        {
+            forward(speed);
+        }
     }
+    else if (direction == BACKWARD)
+    {
+
+        lm = analogRead(backSensors[0]) < BLACK_VALUE ? 0 : 1;
+        l = analogRead(backSensors[1]) < BLACK_VALUE ? 0 : 1;
+        m = analogRead(backSensors[2]) < BLACK_VALUE ? 0 : 1;
+        r = analogRead(backSensors[3]) < BLACK_VALUE ? 0 : 1;
+        rm = analogRead(backSensors[4]) < BLACK_VALUE ? 0 : 1;
+
+        if (l == 1 && m == 1 && r == 1)
+        {
+            backward(speed, speed);
+        }
+        else if (l == 0 && m == 1 && r == 0)
+        {
+            backward(speed, speed);
+        }
+        else if (l == 0 && m == 1 && r == 1)
+        {
+            leftInverse(speed, speed);
+        }
+        else if (lm == 0 && m == 1 && r == 1)
+        {
+            leftInverse(speed, speed);
+        }
+        else if (l == 1 && m == 1 && r == 0)
+        {
+            rightInverse(speed, speed);
+        }
+        else if (l == 1 && m == 1 && rm == 0)
+        {
+            rightInverse(speed, speed);
+        }
+        else
+        {
+            backward(speed);
+        }
+    }
+}
+
+void linefollowFiveStrips(int stripsToMove, Direction direction = FORWARD, int speed = 50)
+{
+    int stripCount = 0;
+    while (true)
+    {
+        int sensorOnLine = 0;
+
+        if (direction == FORWARD)
+        {
+            // Black -> 1, White -> 0
+            sensorOnLine = analogRead(leftSensor) > BLACK_VALUE ? 0 : 1;
+        }
+        else if (direction == BACKWARD)
+        {
+            // Black -> 1, White -> 0
+            sensorOnLine = analogRead(leftSensor) > BLACK_VALUE ? 0 : 1;
+        }
+
+        unsigned long currentMillis = millis();
+        if (sensorOnLine && !prevLine)
+        {
+            stripCount++;
+            prevLine = true;
+            previousMillis = currentMillis;
+        }
+        else if (currentMillis - previousMillis > intervalMillis)
+        {
+            prevLine = false;
+        }
+
+        if (stripCount < stripsToMove)
+        {
+            linefollowWithFive(direction, speed);
+            // Serial.print("Strip# ");
+            // Serial.println(stripCount);
+        }
+        else
+        {
+            // Serial.println("Halt!");
+            halt();
+            return;
+        }
+    }
+}
+
+void linefollowFiveEncoder(uint32_t ticksToMove, Direction direction = FORWARD, int speed = 50)
+{
+    _leftEncoder.ticks = 0;
+    while (_leftEncoder.ticks < ticksToMove)
+    {
+        Serial.println();
+        lineFollow(direction, speed);
+    }
+    halt();
 }
 
 #endif //_LINEFOLLOW_H

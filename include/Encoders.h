@@ -11,8 +11,8 @@ typedef struct
     uint32_t ticks;
 } Encoder;
 
-Encoder _leftEncoder = {pin : 3, ticks : 0};
-Encoder _rightEncoder = {pin : 2, ticks : 0};
+Encoder _leftEncoder = {pin : 18, ticks : 0};
+Encoder _rightEncoder = {pin : 19, ticks : 0};
 
 void _leftInterruptRoutine()
 {

@@ -90,6 +90,17 @@ void forwardStrips(int stripsToMove, int speed = 50)
     }
 }
 
+void forwardEncoder(uint32_t ticksToMove, int speed = 50)
+{
+    _leftEncoder.ticks = 0;
+    while (_leftEncoder.ticks < ticksToMove)
+    {
+        forward(speed, speed);
+        interrupts();
+    }
+    halt();
+}
+
 void backward(int leftSpeed = 50, int rightSpeed = 50)
 {
     analogWrite(LEFT.fwd_pin, 0);
@@ -187,7 +198,7 @@ void _leftFreeze(int leftSpeed = 50, int rightSpeed = 0)
     analogWrite(RIGHT.rev_pin, 0);
 }
 
-void leftTurnEncoder(uint32_t ticksToMove, int speed = 50)
+void leftTurnEncoder(uint32_t ticksToMove, int speed = 100)
 {
     _leftEncoder.ticks = 0;
     while (_leftEncoder.ticks < ticksToMove)
@@ -198,12 +209,12 @@ void leftTurnEncoder(uint32_t ticksToMove, int speed = 50)
     halt();
 }
 
-void rightTurnEncoder(uint32_t ticksToMove)
+void rightTurnEncoder(uint32_t ticksToMove, int speed = 100)
 {
     _leftEncoder.ticks = 0;
     while (_leftEncoder.ticks < ticksToMove)
     {
-        rightInverse();
+        rightInverse(speed, speed);
         interrupts();
     }
     halt();

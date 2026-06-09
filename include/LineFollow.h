@@ -233,23 +233,27 @@ void linefollowFiveStrips(int stripsToMove, Direction direction = FORWARD, int s
         if (direction == FORWARD)
         {
             // Black -> 1, White -> 0
-            sensorOnLine = analogRead(leftSensor) > BLACK_VALUE ? 0 : 1;
+            int value = analogRead(leftSensor);
+            Serial.println(value);
+            sensorOnLine = value > BLACK_VALUE ? 0 : 1;
         }
         else if (direction == BACKWARD)
         {
             // Black -> 1, White -> 0
             sensorOnLine = analogRead(leftSensor) > BLACK_VALUE ? 0 : 1;
         }
-
+        
         unsigned long currentMillis = millis();
         if (sensorOnLine && !prevLine)
         {
+            Serial.println("On the line:" + String(sensorOnLine));
             stripCount++;
             prevLine = true;
             previousMillis = currentMillis;
         }
         else if (currentMillis - previousMillis > intervalMillis)
         {
+            Serial.println("Not on the line:" + String(sensorOnLine));
             prevLine = false;
         }
 

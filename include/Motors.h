@@ -6,6 +6,7 @@
 #include <Arduino.h>
 #include "Sensors.h"
 #include "Encoders.h"
+#include "Sonar.h"
 
 typedef struct
 {
@@ -13,8 +14,8 @@ typedef struct
     uint8_t rev_pin;
 } Motor;
 
-Motor LEFT = {fwd_pin : 4, rev_pin : 5};
-Motor RIGHT = {fwd_pin : 6, rev_pin : 7};
+Motor LEFT = {fwd_pin : 6, rev_pin : 7};
+Motor RIGHT = {fwd_pin : 4, rev_pin : 5};
 
 bool prevLine = false;
 
@@ -101,6 +102,19 @@ void forwardEncoder(uint32_t ticksToMove, int speed = 50)
     halt();
 }
 
+void forwardDistance(float distanceToStop, int speed = 100)
+{
+    float currentDistance = getDistanceCM();
+    Serial.println(currentDistance > distanceToStop);
+    while (currentDistance > distanceToStop)
+    {
+        Serial.println(currentDistance);
+        currentDistance = getDistanceCM();
+        forward(speed, speed + 5);
+    }
+    halt();
+}
+
 void backward(int leftSpeed = 50, int rightSpeed = 50)
 {
     analogWrite(LEFT.fwd_pin, 0);
@@ -142,6 +156,30 @@ void backwardStrips(int stripsToMove, int speed = 50)
             return;
         }
     }
+}
+
+void backwardEncoder(uint32_t ticksToMove, int speed = 50)
+{
+    _leftEncoder.ticks = 0;
+    while (_leftEncoder.ticks < ticksToMove)
+    {
+        backward(speed, speed);
+        interrupts();
+    }
+    halt();
+}
+
+void backwardDistance(float distanceToStop, int speed = 100)
+{
+    float currentDistance = getDistanceCM();
+    Serial.println(currentDistance > distanceToStop);
+    while (currentDistance <= distanceToStop)
+    {
+        Serial.println(currentDistance);
+        currentDistance = getDistanceCM();
+        backward(speed, speed + 5);
+    }
+    halt();
 }
 
 void _right(int leftSpeed = 50, int rightSpeed = 50)

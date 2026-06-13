@@ -1,15 +1,14 @@
 #include <Arduino.h>
 #include "Sensors.h"
 #include "Motors.h"
-#include "StepperControl.h"
 #include "LineFollow.h"
 #include "Encoders.h"
 #include "ColorSensors.h"
+#include "Sonar.h"
+#include "ServoControl.h"
 
 #include "Arena/blue.h"
 #include "Arena/red.h"
-
-// Positive Value is up for vertical and right for horizonal
 
 void setup()
 {
@@ -18,18 +17,20 @@ void setup()
     initEncoders();
     initSensors();
     initMotors();
-    initSteppers();
     colorSensorsBegin();
-    delay(5000);
-    enableSteppers();
-    steppersResetToHome();
-    delay(100);
-    disableSteppers();
-    // delay(5000);
-
+    initServos();
     Serial.println("Code Running...");
 
-    // redStart();
+    // rightTurnEncoder(200, 170);
+    // forwardDistance(20.0f);
+    // forward(50, 55);
+
+    // linefollowFiveStrips(2);
+    // delay(3000);
+    // leftTurnEncoder(200, 180);
+    // dropPellets();
+    // blueStart();
+    redStart();
     // if you have an arena button connected then use this
     // #define ARENA_BUTTON 13
     // #ifdef ARENA_BUTTON
@@ -37,128 +38,63 @@ void setup()
 
     //     if (digitalRead(ARENA_BUTTON) == LOW)
     //     {
-    //         blueStart();
+    // blueStart();
     //     }
     //     else
     //     {
     //         redStart();
     //     }
     // #endif // ARENA_BUTTON
-
-    // linefollowFiveStrips(7, FORWARD, 50);
-    // delay(500);
-    // rightTurnEncoder(210, 150);
-    // delay(1000);
-    // linefollowFiveStrips(2, BACKWARD, 50);
-    // delay(200);
-    // linefollowFiveStrips(2, FORWARD, 50);
-    // delay(1000);
-    // linefollowFiveEncoder(150);
-    // delay(200);
     // enableSteppers();
-    // holderNextPosition();
-    // steppersMoveToPosition(500, 350); // top right
-    // holderNextPosition();
-    // steppersResetToHome();
-    // disableSteppers();
-    // linefollowFiveEncoder(150, BACKWARD);
-    // delay(500);
-    // rightTurnEncoder(210, 150);
-    // delay(500);
-    // linefollowFiveEncoder(200);
-    // linefollowFiveStrips(4, FORWARD, 50);
+    // steppersMoveToPosition(500, 400);
     // delay(1000);
-    // rightTurnEncoder(210, 150);
-    // delay(1000);
-    // linefollowFiveStrips(1, BACKWARD, 50);
-    // delay(1000);
-    // linefollowFiveStrips(2, FORWARD, 50);
-    // enableSteppers();
-    // steppersMoveToPosition(500, 0); // top left
-    // holderNextPosition();
-    // steppersMoveToPosition(0, 350); // bottom right
-    // holderNextPosition();
-    // disableSteppers();
-    // delay(500);
-    // linefollowFiveStrips(2, BACKWARD, 50);
-    // delay(500);
-    // linefollowFiveEncoder(70, FORWARD, 50);
-    // delay(1000);
-    // rightTurnEncoder(210, 150);
-    // delay(1000);
-    // linefollowFiveEncoder(200);
-    // linefollowFiveStrips(2, FORWARD, 50);
-    // delay(1000);
-    // leftTurnEncoder(200, 150);
-    // delay(1000);
-    // lineFollowEncoder(200);
-    // linefollowFiveStrips(5, FORWARD, 100);
-    // forwardEncoder(1500, 70);
-
-    // linefollowFiveStrips(3);
-    // delay(2000);
-    // leftTurnEncoder(200, 150);
-    // delay(2000);
-    // linefollowFiveEncoder(200);
-    // linefollowFiveStrips(4);
-    // delay(2000);
-    // rightTurnEncoder(210);
-    // delay(2000);
-    // linefollowFiveEncoder(200);
-    // linefollowFiveStrips(5);
-    // delay(2000);
-    // rightTurnEncoder(210);
-    // delay(2000);
-    // linefollowFiveEncoder(200);
-    // linefollowFiveStrips(2);
-    // halt();
-    // forward(100, 100);
-    // steppersMoveToPosition(200, 200);
-    delay(1000);
-    enableSteppers();
-    moveToGridPosition(TOP_RIGHT);
-    // moveToGridPosition(TOP_LEFT);
-    // moveToGridPosition(BOTTOM_RIGHT);
-    // moveToGridPosition(BOTTOM_LEFT);
-    // steppersResetToHome(); // bottom left
-    // holderNextPosition();
+    // steppersMoveToPosition(-500, -400);
 }
 
 void loop()
 {
-    // String color0 = colorSensors.readColor(0);
-    // String color1 = colorSensors.readColor(1);
-    // String color2 = colorSensors.readColor(2);
-
+    // loadAndShoot();
+    // delay(1000);
+    // for (int i = 60; i<=120; i++)
+    // {
+    //     shootServo.write(i);
+    //     delay(15);
+    // }
+    // for (int i = 120; i>=60; i--)
+    // {
+    //     shootServo.write(i);
+    //     delay(15);
+    // }
+    // leftInverse();
+    // backward(50, 50);
+    // Serial.println("Loop");
     // or for full debug output:
+    // leftServo.write(10);
+    // rightServo.write(125);
     // debugChannel(0);
     // debugChannel(1);
-    // Serial.println("============");
-    // colorSensors.debugChannel(2);
+    // debugChannel(2);
+    // debugChannel(3);
+    debugChannel(4);
+    Serial.println("============");
+
     // Serial.print(digitalRead(SWITCH_HOR));
     // Serial.print(" ");
     // Serial.println(digitalRead(SWITCH_VER));
 
-    delay(300);
-    // linefollowWithFive(FORWARD);
+    // printDipValues();
 
-    // steppersMoveToPosition(-200, -200);
-    // delay(100);
-    // delay(5000);
-    // Serial.println("Loop");
-    // leftInverse();
-    // leftTurnEncoder(200);
-    // while (true)
-    // {
-    //     delay(10);
-    // }
-
-    // lineFollow(FORWARD, 50);
-    // leftInverse();
+    // Results result = readSlotSensors();
+    // Serial.print(result.left);
+    // Serial.print(" ");
+    // Serial.println(result.right);
 
     // printSensorVals(frontSensors);
     // printSensorVal(leftSensor);
-    // delay(100);
     // printEncoders();
     // Serial.println(digitalRead(SWITCH_HOR));
+
+    // Serial.println(getDistanceCM());
+
+    // delay(300);
 }
